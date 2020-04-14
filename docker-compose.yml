@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+
+  webserver:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app
+    ports:
+      - 8090:80
+    links:
+      - app
+
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app
+    links:
+      - database
+
+  database:
+    image: percona:latest
+    volumes:
+      - ./database:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: bookriver
+      MYSQL_ROOT_PASSWORD: 123
+
+  composer:
+    image:  composer:latest
+    volumes:
+      - ./src:/app
+    command: composer install
